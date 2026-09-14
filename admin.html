@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin-Dashboard — Plüsch Studios©</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+:root{--bg:#050508;--surface:#15152a;--border-soft:rgba(255,255,255,0.08);--text:#eeeeff;--text-dim:rgba(255,255,255,0.56);--text-faint:rgba(255,255,255,0.30);--c1:#7c3aed;--c2:#db2777;--c3:#22d3ee;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;line-height:1.6;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:inherit;}
+::-webkit-scrollbar{height:8px;width:10px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:linear-gradient(var(--c1),var(--c2));border-radius:99px;}
+
+/* Login-Gate */
+#gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+.gate-card{width:100%;max-width:380px;background:rgba(21,21,42,.85);border:1px solid var(--border-soft);border-radius:20px;padding:32px;text-align:center;}
+.gate-card h1{font-size:18px;margin:0 0 6px;}
+.gate-card p{font-size:12.5px;color:var(--text-faint);margin:0 0 20px;}
+.input{width:100%;background:var(--bg);border:1px solid var(--border-soft);border-radius:10px;padding:12px 14px;font-size:13.5px;color:var(--text);font-family:inherit;}
+.input:focus{outline:none;border-color:var(--c3);}
+.btn{display:block;width:100%;padding:12px;border-radius:10px;font-weight:800;font-size:12px;letter-spacing:.03em;text-transform:uppercase;border:none;cursor:pointer;font-family:inherit;background:linear-gradient(135deg,var(--c1),var(--c2));color:#fff;margin-top:14px;}
+.btn:hover{filter:brightness(1.08);}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+.btn-ghost{background:transparent;border:1px solid var(--border-soft);color:var(--text-dim);}
+.btn-sm{width:auto;padding:7px 14px;font-size:11px;margin:0;}
+.btn-danger{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.35);color:#f87171;}
+.err{display:none;font-size:12px;font-weight:600;padding:10px 14px;border-radius:8px;background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.25);margin-top:12px;}
+.ok{display:none;font-size:12px;font-weight:600;padding:10px 14px;border-radius:8px;background:rgba(34,197,94,.1);color:#4ade80;border:1px solid rgba(34,197,94,.25);margin-top:12px;line-height:1.6;}
+
+/* Dashboard */
+#dash{display:none;max-width:1100px;margin:0 auto;padding:28px 20px;}
+.dash-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.dash-head h1{font-size:18px;margin:0;}
+.tabs{display:flex;gap:6px;background:var(--surface);border-radius:10px;padding:4px;margin-bottom:24px;overflow-x:auto;}
+.tab-btn{padding:9px 16px;border-radius:8px;font-size:12.5px;font-weight:700;color:var(--text-faint);cursor:pointer;background:none;border:none;font-family:inherit;white-space:nowrap;}
+.tab-btn.active{background:linear-gradient(135deg,var(--c1),var(--c2));color:#fff;}
+.panel{display:none;}
+.panel.active{display:block;}
+
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:24px;}
+.stat-card{background:var(--surface);border:1px solid var(--border-soft);border-radius:14px;padding:20px;}
+.stat-num{font-size:28px;font-weight:900;font-family:'JetBrains Mono',monospace;background:linear-gradient(135deg,var(--c3),var(--c1));-webkit-background-clip:text;background-clip:text;color:transparent;}
+.stat-label{font-size:11px;color:var(--text-faint);font-weight:600;text-transform:uppercase;margin-top:4px;}
+
+.card{background:var(--surface);border:1px solid var(--border-soft);border-radius:16px;padding:24px;margin-bottom:16px;}
+.card h2{font-size:14px;margin:0 0 16px;}
+label{display:block;font-size:11px;font-weight:700;color:var(--text-faint);text-transform:uppercase;letter-spacing:.03em;margin:14px 0 6px;}
+label:first-of-type{margin-top:0;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;font-size:10.5px;text-transform:uppercase;color:var(--text-faint);padding:8px 10px;border-bottom:1px solid var(--border-soft);}
+td{padding:10px;border-bottom:1px solid var(--border-soft);color:var(--text-dim);}
+tr:last-child td{border-bottom:none;}
+.badge{font-size:10px;font-weight:800;padding:3px 9px;border-radius:999px;text-transform:uppercase;}
+.badge-open{background:rgba(251,191,36,.12);color:#fbbf24;}
+.badge-closed{background:rgba(34,197,94,.12);color:#4ade80;}
+.empty{text-align:center;padding:40px 20px;color:var(--text-faint);font-size:13px;}
+.ticket-msg{white-space:pre-wrap;font-size:12px;color:var(--text-faint);max-width:320px;max-height:60px;overflow-y:auto;}
+
+.tier-edit{background:var(--bg);border:1px solid var(--border-soft);border-radius:12px;padding:18px;margin-bottom:14px;}
+.tier-edit-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.tier-edit-head input[type="text"].icon-input{width:50px;text-align:center;flex-shrink:0;}
+.tier-edit-head input[type="text"].name-input{font-weight:800;font-size:14px;}
+.tier-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;}
+.tier-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.tier-edit textarea{width:100%;background:var(--bg);border:1px solid var(--border-soft);border-radius:8px;padding:10px;font-size:12.5px;color:var(--text);font-family:'JetBrains Mono',monospace;min-height:110px;resize:vertical;}
+.tier-edit textarea:focus{outline:none;border-color:var(--c3);}
+.tier-popular-toggle{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-dim);margin-top:10px;}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="gate-card">
+    <h1>🔐 Admin-Dashboard</h1>
+    <p>Plüsch Studios — nur für dich</p>
+    <input class="input" type="password" id="pw" placeholder="Admin-Passwort" onkeydown="if(event.key==='Enter')login()" />
+    <button class="btn" id="loginBtn" onclick="login()">Anmelden</button>
+    <div class="err" id="loginErr"></div>
+  </div>
+</div>
+
+<div id="dash">
+  <div class="dash-head">
+    <h1>🦊 Plüsch Studios Admin</h1>
+    <button class="btn btn-ghost btn-sm" onclick="logout()">Abmelden</button>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('overview')">📊 Übersicht</button>
+    <button class="tab-btn" onclick="switchTab('shop')">🛍️ Shop</button>
+    <button class="tab-btn" onclick="switchTab('pricing')">💰 Preise</button>
+    <button class="tab-btn" onclick="switchTab('tickets')">🎫 Tickets</button>
+    <button class="tab-btn" onclick="switchTab('users')">👥 Nutzer</button>
+  </div>
+
+  <div class="panel active" id="panel-overview">
+    <div class="stat-grid" id="statGrid">
+      <div class="stat-card"><div class="stat-num">–</div><div class="stat-label">Lädt...</div></div>
+    </div>
+    <div class="card">
+      <h2>🔧 Wartung</h2>
+      <button class="btn btn-ghost" style="width:auto;" onclick="rebuildIndex()">Nutzer-Index neu aufbauen</button>
+      <div class="err" id="rebuildErr"></div>
+      <div class="ok" id="rebuildOk"></div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-shop">
+    <div class="card">
+      <h2>➕ Neues Produkt</h2>
+      <label>Produktname</label>
+      <input class="input" type="text" id="pName" placeholder="z.B. Plüschi T-Shirt" />
+      <div class="row2">
+        <div><label>Preis</label><input class="input" type="text" id="pPrice" placeholder="19,99€" /></div>
+        <div><label>Icon</label><input class="input" type="text" id="pIcon" placeholder="👕" /></div>
+      </div>
+      <label>Kategorie</label>
+      <input class="input" type="text" id="pCategory" placeholder="T-Shirts" list="catList" />
+      <datalist id="catList"><option value="T-Shirts"><option value="Caps"><option value="Plüschtiere"><option value="Sticker"></datalist>
+      <label>Ko-fi-Link</label>
+      <input class="input" type="url" id="pKofiUrl" placeholder="https://ko-fi.com/s/..." />
+      <label>Beschreibung</label>
+      <input class="input" type="text" id="pDescription" placeholder="Kurzer Satz zum Produkt" />
+      <button class="btn" id="publishBtn" onclick="publish()">🚀 Veröffentlichen</button>
+      <div class="err" id="publishErr"></div>
+      <div class="ok" id="publishOk"></div>
+    </div>
+    <div class="card">
+      <h2>📦 Aktuelle Produkte</h2>
+      <div id="productList"><div class="empty">Lädt...</div></div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-tickets">
+    <div class="card">
+      <h2>🎫 Support-Tickets</h2>
+      <div id="ticketList"><div class="empty">Lädt...</div></div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-pricing">
+    <div class="card">
+      <h2>💰 Tarife bearbeiten</h2>
+      <p style="font-size:11.5px;color:var(--text-faint);margin:-10px 0 16px;">
+        Features: eine Zeile pro Punkt. "+ " am Anfang = enthalten (grüner Haken), "- " am Anfang = nicht enthalten (grauer Strich).
+      </p>
+      <div id="pricingForm"><div class="empty">Lädt...</div></div>
+      <button class="btn" id="pricingSaveBtn" onclick="savePricing()" style="width:auto;margin-top:6px;">💾 Alle Tarife speichern</button>
+      <div class="err" id="pricingErr"></div>
+      <div class="ok" id="pricingOk"></div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-users">
+    <div class="card">
+      <h2>👥 Registrierte Nutzer</h2>
+      <div id="userList"><div class="empty">Lädt...</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const MAILBOT_URL = "https://thestupidplueschguy.pythonanywhere.com";
+let adminPassword = "";
+
+async function api(path, extra) {
+  try {
+    const res = await fetch(MAILBOT_URL + path, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ admin_password: adminPassword, ...(extra || {}) }),
+    });
+    return await res.json();
+  } catch (e) {
+    return { success: false, error: "Mailbot nicht erreichbar" };
+  }
+}
+
+async function login() {
+  const pw = document.getElementById('pw').value;
+  const errBox = document.getElementById('loginErr');
+  errBox.style.display = 'none';
+
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.textContent = 'Prüfe...';
+  adminPassword = pw;
+  const res = await api('/api/admin/stats');
+  btn.disabled = false; btn.textContent = 'Anmelden';
+
+  if (!res.success) {
+    adminPassword = "";
+    errBox.textContent = '❌ ' + (res.error || 'Falsches Passwort');
+    errBox.style.display = 'block';
+    return;
+  }
+
+  sessionStorage.setItem('plueschi_admin_pw', pw);
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('dash').style.display = 'block';
+  renderStats(res.stats);
+  loadShop();
+  loadPricing();
+  loadTickets();
+  loadUsers();
+}
+
+function logout() {
+  adminPassword = "";
+  sessionStorage.removeItem('plueschi_admin_pw');
+  document.getElementById('dash').style.display = 'none';
+  document.getElementById('gate').style.display = 'flex';
+  document.getElementById('pw').value = '';
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('panel-' + name).classList.add('active');
+}
+
+function renderStats(stats) {
+  document.getElementById('statGrid').innerHTML = `
+    <div class="stat-card"><div class="stat-num">${stats.total_users}</div><div class="stat-label">Nutzer</div></div>
+    <div class="stat-card"><div class="stat-num">${stats.total_subscribers}</div><div class="stat-label">Shop-Abonnenten</div></div>
+    <div class="stat-card"><div class="stat-num">${stats.total_products}</div><div class="stat-label">Shop-Produkte</div></div>
+    <div class="stat-card"><div class="stat-num">${stats.open_tickets}</div><div class="stat-label">Offene Tickets</div></div>
+  `;
+}
+
+async function rebuildIndex() {
+  const errBox = document.getElementById('rebuildErr'), okBox = document.getElementById('rebuildOk');
+  errBox.style.display = 'none'; okBox.style.display = 'none';
+  const res = await api('/api/admin/rebuild-index');
+  if (!res.success) { errBox.textContent = '❌ ' + res.error; errBox.style.display = 'block'; return; }
+  okBox.textContent = '✅ Index neu aufgebaut';
+  okBox.style.display = 'block';
+}
+
+async function publish() {
+  const errBox = document.getElementById('publishErr'), okBox = document.getElementById('publishOk');
+  errBox.style.display = 'none'; okBox.style.display = 'none';
+
+  const payload = {
+    name: document.getElementById('pName').value.trim(),
+    price: document.getElementById('pPrice').value.trim(),
+    icon: document.getElementById('pIcon').value.trim(),
+    category: document.getElementById('pCategory').value.trim(),
+    kofi_url: document.getElementById('pKofiUrl').value.trim(),
+    description: document.getElementById('pDescription').value.trim(),
+  };
+  if (!payload.name || !payload.kofi_url) {
+    errBox.textContent = '❌ Name und Ko-fi-Link sind Pflicht';
+    errBox.style.display = 'block';
+    return;
+  }
+
+  const btn = document.getElementById('publishBtn');
+  btn.disabled = true; btn.textContent = 'Wird veröffentlicht...';
+  const res = await api('/api/shop/admin/publish', payload);
+  btn.disabled = false; btn.textContent = '🚀 Veröffentlichen';
+
+  if (!res.success) { errBox.textContent = '❌ ' + res.error; errBox.style.display = 'block'; return; }
+
+  okBox.innerHTML = `✅ "${payload.name}" ist live!<br>📧 ${res.notified} von ${res.total_subscribers} benachrichtigt.`;
+  okBox.style.display = 'block';
+  ['pName','pPrice','pIcon','pCategory','pKofiUrl','pDescription'].forEach(id => document.getElementById(id).value = '');
+  loadShop();
+}
+
+async function loadShop() {
+  const res = await fetch(MAILBOT_URL + '/api/shop/products').then(r => r.json()).catch(() => null);
+  const container = document.getElementById('productList');
+  if (!res || !res.success || res.products.length === 0) {
+    container.innerHTML = '<div class="empty">Noch keine Produkte veröffentlicht</div>';
+    return;
+  }
+  container.innerHTML = `<table><tr><th>Produkt</th><th>Kategorie</th><th>Preis</th><th></th></tr>` +
+    res.products.map(p => `
+      <tr>
+        <td>${p.icon || ''} ${p.name}</td>
+        <td>${p.category}</td>
+        <td>${p.price || '—'}</td>
+        <td><button class="btn btn-danger btn-sm" onclick="deleteProduct('${p.id}')">Entfernen</button></td>
+      </tr>
+    `).join('') + `</table>`;
+}
+
+async function deleteProduct(id) {
+  if (!confirm('Produkt wirklich entfernen?')) return;
+  const res = await api('/api/shop/admin/delete', { id });
+  if (res.success) loadShop();
+}
+
+async function loadTickets() {
+  const res = await api('/api/admin/tickets');
+  const container = document.getElementById('ticketList');
+  if (!res.success || res.tickets.length === 0) {
+    container.innerHTML = '<div class="empty">Keine offenen Tickets 🎉</div>';
+    return;
+  }
+  container.innerHTML = `<table><tr><th>Von</th><th>Betreff</th><th>Nachricht</th><th>Datum</th><th></th></tr>` +
+    res.tickets.map(t => `
+      <tr>
+        <td>${t.email}</td>
+        <td>${t.subject}</td>
+        <td><div class="ticket-msg">${(t.message || '').replace(/</g,'&lt;')}</div></td>
+        <td class="mono" style="font-size:11px;">${t.created_at}</td>
+        <td><button class="btn btn-ghost btn-sm" onclick="closeTicket('${t.id}')">✅ Erledigt</button></td>
+      </tr>
+    `).join('') + `</table>`;
+}
+
+async function closeTicket(id) {
+  const res = await api('/api/admin/tickets/close', { id });
+  if (res.success) loadTickets();
+}
+
+let currentTiers = [];
+
+function featuresToText(features) {
+  return (features || []).map(f => (f.included ? '+ ' : '- ') + f.text).join('\n');
+}
+function textToFeatures(text) {
+  return text.split('\n').map(line => line.trim()).filter(Boolean).map(line => {
+    const included = line.startsWith('+');
+    return { text: line.replace(/^[+-]\s*/, ''), included };
+  });
+}
+
+function renderPricingForm() {
+  const container = document.getElementById('pricingForm');
+  container.innerHTML = currentTiers.map((t, i) => `
+    <div class="tier-edit">
+      <div class="tier-edit-head">
+        <input class="input icon-input" type="text" id="t${i}_icon" value="${t.icon || ''}" />
+        <input class="input name-input" type="text" id="t${i}_name" value="${t.name || ''}" style="flex:1;" />
+      </div>
+      <div class="tier-row3">
+        <div><label>Preis</label><input class="input" type="text" id="t${i}_price" value="${t.price || ''}" /></div>
+        <div><label>Geräte-Label</label><input class="input" type="text" id="t${i}_devices" value="${t.devices || ''}" /></div>
+        <div><label>Button-Text</label><input class="input" type="text" id="t${i}_cta_text" value="${t.cta_text || ''}" /></div>
+      </div>
+      <label>Button-Link</label>
+      <input class="input" type="text" id="t${i}_cta_url" value="${t.cta_url || ''}" style="margin-bottom:10px;" />
+      <label>Features (eine Zeile pro Punkt, + oder - am Anfang)</label>
+      <textarea id="t${i}_features">${featuresToText(t.features)}</textarea>
+      <div class="tier-popular-toggle">
+        <input type="checkbox" id="t${i}_popular" ${t.popular ? 'checked' : ''} />
+        <label for="t${i}_popular" style="margin:0;text-transform:none;font-weight:600;">Als "Beliebt" markieren</label>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function loadPricing() {
+  try {
+    const res = await fetch(MAILBOT_URL + '/api/pricing/tiers').then(r => r.json());
+    if (res.success) { currentTiers = res.tiers; renderPricingForm(); }
+  } catch (e) {
+    document.getElementById('pricingForm').innerHTML = '<div class="empty">Konnte Tarife nicht laden</div>';
+  }
+}
+
+async function savePricing() {
+  const errBox = document.getElementById('pricingErr'), okBox = document.getElementById('pricingOk');
+  errBox.style.display = 'none'; okBox.style.display = 'none';
+
+  const updated = currentTiers.map((t, i) => ({
+    id: t.id,
+    icon: document.getElementById(`t${i}_icon`).value.trim(),
+    name: document.getElementById(`t${i}_name`).value.trim(),
+    price: document.getElementById(`t${i}_price`).value.trim(),
+    devices: document.getElementById(`t${i}_devices`).value.trim(),
+    cta_text: document.getElementById(`t${i}_cta_text`).value.trim(),
+    cta_url: document.getElementById(`t${i}_cta_url`).value.trim(),
+    popular: document.getElementById(`t${i}_popular`).checked,
+    features: textToFeatures(document.getElementById(`t${i}_features`).value),
+  }));
+
+  const btn = document.getElementById('pricingSaveBtn');
+  btn.disabled = true; btn.textContent = 'Speichert...';
+  const res = await api('/api/admin/pricing/update', { tiers: updated });
+  btn.disabled = false; btn.textContent = '💾 Alle Tarife speichern';
+
+  if (!res.success) { errBox.textContent = '❌ ' + res.error; errBox.style.display = 'block'; return; }
+  currentTiers = updated;
+  okBox.textContent = '✅ Gespeichert — live auf der Website sichtbar';
+  okBox.style.display = 'block';
+}
+
+async function loadUsers() {
+  const res = await api('/api/admin/users');
+  const container = document.getElementById('userList');
+  if (!res.success || res.users.length === 0) {
+    container.innerHTML = '<div class="empty">Keine Nutzer gefunden</div>';
+    return;
+  }
+  container.innerHTML = `<table><tr><th>Benutzername</th><th>E-Mail</th><th>Tarif</th><th>Geräte</th><th>2FA</th><th>Mitglied seit</th></tr>` +
+    res.users.map(u => `
+      <tr>
+        <td>${u.username}</td>
+        <td>${u.email || '—'}</td>
+        <td>${(u.plan||'free').toUpperCase()}</td>
+        <td>${u.device_count}</td>
+        <td>${u.totp_enabled ? '✅' : '—'}</td>
+        <td class="mono" style="font-size:11px;">${u.joined || '—'}</td>
+      </tr>
+    `).join('') + `</table>`;
+}
+
+// Session-Passwort im Tab merken (nur sessionStorage, nicht dauerhaft)
+(function restoreSession(){
+  const saved = sessionStorage.getItem('plueschi_admin_pw');
+  if (saved) {
+    document.getElementById('pw').value = saved;
+    login();
+  }
+})();
+</script>
+
+</body>
+</html>

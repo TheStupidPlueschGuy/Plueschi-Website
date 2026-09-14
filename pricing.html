@@ -157,67 +157,10 @@ html{scrollbar-color:var(--c1) var(--bg);}
 </header>
 
 <section class="pricing-wrap">
-  <div class="pricing-grid">
-
-    <div class="tier fade-in" style="animation-delay:.05s;">
-      <div class="tier-icon">🦊</div>
-      <h3 class="tier-name">Free</h3>
-      <div class="tier-price">0€<span> / Monat</span></div>
-      <div class="tier-devices">◈ 2 GERÄTE</div>
-      <ul class="tier-features">
-        <li><span class="check">✓</span> Unbegrenzte Downloads (MP4/MP3)</li>
-        <li><span class="check">✓</span> Warteschlange & Verlauf</li>
-        <li><span class="check">✓</span> 2FA inklusive</li>
-        <li><span class="check">✓</span> Community-Support</li>
-        <li class="disabled"><span class="cross">–</span> Priorisierte Downloads</li>
-      </ul>
-      <a class="tier-btn" href="downloader.html">Kostenlos starten</a>
+  <div class="pricing-grid" id="pricingGrid">
+    <div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text-faint);">
+      <span style="font-size:32px;">🦊</span><br>Lade Tarife...
     </div>
-
-    <div class="tier fade-in" style="animation-delay:.1s;">
-      <div class="tier-icon">⭐</div>
-      <h3 class="tier-name">Standard</h3>
-      <div class="tier-price">2,99€<span> / Monat</span></div>
-      <div class="tier-devices">◈ 4 GERÄTE</div>
-      <ul class="tier-features">
-        <li><span class="check">✓</span> Alles aus Free</li>
-        <li><span class="check">✓</span> Priorisierte Downloads</li>
-        <li><span class="check">✓</span> Track Finder inklusive</li>
-        <li><span class="check">✓</span> E-Mail-Support</li>
-      </ul>
-      <a class="tier-btn" href="https://ko-fi.com/plueschstudios" target="_blank" rel="noopener">Upgraden</a>
-    </div>
-
-    <div class="tier popular fade-in" style="animation-delay:.15s;">
-      <div class="tier-badge">✨ Beliebt</div>
-      <div class="tier-icon">💎</div>
-      <h3 class="tier-name">Premium</h3>
-      <div class="tier-price">5,99€<span> / Monat</span></div>
-      <div class="tier-devices">◈ 6 GERÄTE</div>
-      <ul class="tier-features">
-        <li><span class="check">✓</span> Alles aus Standard</li>
-        <li><span class="check">✓</span> Prioritäts-Support</li>
-        <li><span class="check">✓</span> Frühzugriff auf neue Features</li>
-        <li><span class="check">✓</span> Keine Werbung (falls je vorhanden)</li>
-      </ul>
-      <a class="tier-btn solid" href="https://ko-fi.com/plueschstudios" target="_blank" rel="noopener">Upgraden</a>
-    </div>
-
-    <div class="tier fade-in" style="animation-delay:.2s;">
-      <div class="tier-icon">🚀</div>
-      <h3 class="tier-name">Ultimate</h3>
-      <div class="tier-price">9,99€<span> / Monat</span></div>
-      <div class="tier-devices">◈ UNBEGRENZTE GERÄTE</div>
-      <ul class="tier-features">
-        <li><span class="check">✓</span> Alles aus Premium</li>
-        <li><span class="check">✓</span> Unbegrenzte Geräte</li>
-        <li><span class="check">✓</span> Persönlicher Support-Kontakt</li>
-        <li><span class="check">✓</span> Namentliche Erwähnung als Supporter</li>
-        <li><span class="check">✓</span> Stimme bei neuen Features</li>
-      </ul>
-      <a class="tier-btn" href="https://ko-fi.com/plueschstudios" target="_blank" rel="noopener">Upgraden</a>
-    </div>
-
   </div>
 </section>
 
@@ -236,6 +179,8 @@ html{scrollbar-color:var(--c1) var(--bg);}
         <a href="pricing.html">Abonnement</a>
         <a href="support.html">Support</a>
         <a href="impressum.html">Impressum</a>
+        <a href="sites.html">Unterstützte Seiten</a>
+        <a href="whatsnew.html">Changelog</a>
         <a href="https://github.com/TheStupidPlueschGuy">GitHub</a>
       </div>
     </div>
@@ -245,16 +190,59 @@ html{scrollbar-color:var(--c1) var(--bg);}
 </footer>
 
 <script>
-if (window.matchMedia('(hover: hover)').matches) {
-  const ring = document.getElementById('cursorRing'), dot = document.getElementById('cursorDot');
-  let rx=0, ry=0, mx=0, my=0;
-  window.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; dot.style.left=mx+'px'; dot.style.top=my+'px'; });
-  (function loop(){ rx+=(mx-rx)*0.18; ry+=(my-ry)*0.18; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(loop); })();
+function attachCursorHover() {
+  if (!window.matchMedia('(hover: hover)').matches) return;
+  const ring = document.getElementById('cursorRing');
   document.querySelectorAll('a, button, .tier').forEach(el => {
     el.addEventListener('mouseenter', () => ring.classList.add('active'));
     el.addEventListener('mouseleave', () => ring.classList.remove('active'));
   });
 }
+
+if (window.matchMedia('(hover: hover)').matches) {
+  const ring = document.getElementById('cursorRing'), dot = document.getElementById('cursorDot');
+  let rx=0, ry=0, mx=0, my=0;
+  window.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; dot.style.left=mx+'px'; dot.style.top=my+'px'; });
+  (function loop(){ rx+=(mx-rx)*0.18; ry+=(my-ry)*0.18; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(loop); })();
+  attachCursorHover();
+}
+
+const MAILBOT_URL = "https://thestupidplueschguy.pythonanywhere.com";
+
+function renderTiers(tiers) {
+  const grid = document.getElementById('pricingGrid');
+  grid.innerHTML = tiers.map((t, i) => `
+    <div class="tier ${t.popular ? 'popular' : ''} fade-in" style="animation-delay:${i*0.05}s;">
+      ${t.popular ? '<div class="tier-badge">✨ Beliebt</div>' : ''}
+      <div class="tier-icon">${t.icon || '🦊'}</div>
+      <h3 class="tier-name">${t.name}</h3>
+      <div class="tier-price">${t.price}<span> / Monat</span></div>
+      <div class="tier-devices">◈ ${t.devices}</div>
+      <ul class="tier-features">
+        ${(t.features || []).map(f => `
+          <li class="${f.included ? '' : 'disabled'}">
+            <span class="${f.included ? 'check' : 'cross'}">${f.included ? '✓' : '–'}</span> ${f.text}
+          </li>
+        `).join('')}
+      </ul>
+      <a class="tier-btn ${t.popular ? 'solid' : ''}" href="${t.cta_url}" ${t.cta_url.startsWith('http') ? 'target="_blank" rel="noopener"' : ''}>${t.cta_text}</a>
+    </div>
+  `).join('');
+  attachCursorHover();
+}
+
+async function loadTiers() {
+  try {
+    const res = await fetch(MAILBOT_URL + '/api/pricing/tiers');
+    const data = await res.json();
+    if (data.success) { renderTiers(data.tiers); return; }
+    throw new Error('Keine Daten');
+  } catch (e) {
+    document.getElementById('pricingGrid').innerHTML =
+      '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text-faint);">Tarife gerade nicht ladbar. Kurz warten und Seite neu laden.</div>';
+  }
+}
+loadTiers();
 </script>
 
 </body>
