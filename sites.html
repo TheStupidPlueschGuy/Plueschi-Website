@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unterstützte Seiten — Plüsch Studios©</title>
+<meta name="description" content="Über 1.800 unterstützte Seiten für Downloads mit Plüsch Downloader.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+:root{--bg:#050508;--surface:#15152a;--border-soft:rgba(255,255,255,0.08);--text:#eeeeff;--text-dim:rgba(255,255,255,0.56);--text-faint:rgba(255,255,255,0.30);--c1:#7c3aed;--c2:#db2777;--c3:#22d3ee;}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;cursor:none;}
+a{color:inherit;text-decoration:none;}
+.mono{font-family:'JetBrains Mono',monospace;}
+::selection{background:var(--c1);color:#fff;}
+:focus-visible{outline:2px solid var(--c3);outline-offset:3px;}
+::-webkit-scrollbar{height:8px;width:10px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:linear-gradient(var(--c1),var(--c2));border-radius:99px;}
+html{scrollbar-color:var(--c1) var(--bg);}
+@media (hover:none){body{cursor:auto;}}
+#cursorRing{position:fixed;width:26px;height:26px;border:1.5px solid var(--c3);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s,border-color .2s,background .2s;mix-blend-mode:screen;}
+#cursorDot{position:fixed;width:5px;height:5px;background:var(--c3);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 12px 3px var(--c3);}
+#cursorRing.active{width:48px;height:48px;border-color:var(--c2);background:rgba(219,39,119,0.08);}
+@media (hover:none){#cursorRing,#cursorDot{display:none;}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.fade-in{animation:fadeInUp .7s cubic-bezier(.2,.7,.2,1) both;}
+
+.promo{background:linear-gradient(90deg,var(--c1),var(--c2));color:#fff;font-size:13px;font-weight:700;text-align:center;padding:10px 44px 10px 16px;position:relative;}
+.promo a{text-decoration:underline;margin-left:6px;}
+.promo-close{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:#fff;font-size:15px;cursor:pointer;opacity:.85;}
+.promo-close:hover{opacity:1;}
+
+.nav{position:sticky;top:0;z-index:100;background:rgba(5,5,8,.85);backdrop-filter:blur(14px);border-bottom:1px solid var(--border-soft);}
+.nav-inner{max-width:1280px;margin:0 auto;padding:16px 32px;display:flex;align-items:center;justify-content:space-between;}
+.nav-logo{font-weight:800;font-size:16px;display:flex;align-items:center;gap:8px;}
+.spark{display:inline-block;animation:wiggle 3.5s ease-in-out infinite;}
+@keyframes wiggle{0%,100%{transform:rotate(0) scale(1);}50%{transform:rotate(-12deg) scale(1.15);}}
+.nav-mid{display:flex;align-items:center;gap:30px;font-size:13.5px;font-weight:600;color:var(--text-dim);}
+.nav-mid > div{position:relative;}
+.nav-drop-btn{display:flex;align-items:center;gap:5px;cursor:pointer;padding:6px 0;}
+.nav-drop-btn:hover, .nav-mid a:hover{color:var(--text);}
+.chev{font-size:9px;transition:transform .2s;}
+.nav-drop-btn:hover .chev{transform:rotate(180deg);}
+.dropdown{position:absolute;top:100%;left:50%;transform:translateX(-50%) translateY(6px);min-width:200px;background:var(--surface);border:1px solid var(--border-soft);border-radius:12px;padding:8px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;box-shadow:0 20px 50px rgba(0,0,0,.5);}
+.nav-mid > div:hover .dropdown{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0);}
+.dropdown a{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:600;color:var(--text-dim);}
+.dropdown a:hover{background:rgba(255,255,255,.05);color:var(--text);}
+.nav-icons{display:flex;align-items:center;gap:18px;}
+.icon-btn{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--text-dim);position:relative;transition:background .2s,color .2s;}
+.icon-btn:hover{background:rgba(255,255,255,.06);color:var(--text);}
+.cart-badge{position:absolute;top:-2px;right:-2px;background:var(--c2);color:#fff;font-size:9px;font-weight:800;width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+@media (max-width:900px){.nav-mid{display:none;}}
+
+.page-hero{position:relative;background:radial-gradient(120% 100% at 15% 0%, rgba(124,58,237,0.16), transparent 55%), radial-gradient(100% 90% at 90% 100%, rgba(219,39,119,0.14), transparent 55%), #08080e;padding:64px 24px 80px;}
+.container{max-width:900px;margin:0 auto;}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--c3);margin:0 0 14px;text-align:center;}
+.page-title{font-size:clamp(1.8rem,3.6vw,2.6rem);font-weight:900;letter-spacing:-.03em;margin:0 0 10px;text-align:center;}
+.page-sub{font-size:13.5px;color:var(--text-faint);text-align:center;margin:0 0 40px;font-family:'JetBrains Mono',monospace;}
+
+.category{margin-bottom:30px;}
+.category-title{font-size:13.5px;font-weight:800;color:var(--text-dim);margin-bottom:14px;}
+.tag-row{display:flex;flex-wrap:wrap;gap:8px;}
+.site-tag{display:inline-block;padding:8px 14px;background:var(--surface);border:1px solid var(--border-soft);border-radius:999px;font-size:12.5px;font-weight:600;color:var(--text-dim);transition:all .2s;}
+.site-tag:hover{border-color:var(--c3);color:var(--text);transform:translateY(-2px);}
+
+.more-note{text-align:center;font-size:12.5px;color:var(--text-faint);margin-top:32px;padding-top:24px;border-top:1px solid var(--border-soft);}
+
+.site-footer{border-top:1px solid var(--border-soft);padding:36px 0 28px;background:#08080e;}
+.footer-inner{max-width:1280px;margin:0 auto;padding:0 32px;}
+.footer-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;padding-bottom:24px;}
+.footer-divider{height:1px;background:var(--border-soft);margin-bottom:18px;}
+.footer-links{display:flex;gap:24px;flex-wrap:wrap;font-size:13px;color:var(--text-dim);}
+.footer-links a:hover{color:var(--text);}
+.footer-copy{font-size:11px;color:var(--text-faint);font-family:'JetBrains Mono',monospace;}
+.grain{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.03;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+</style>
+</head>
+<body>
+
+<div id="cursorRing"></div>
+<div id="cursorDot"></div>
+<div class="grain"></div>
+
+<div class="promo mono" id="promoBar">
+  🎁 Unser Geschenk an dich: Alle Projekte kostenlos <a href="downloader.html">Jetzt entdecken</a>
+  <button class="promo-close" onclick="document.getElementById('promoBar').style.display='none'" aria-label="Schließen">✕</button>
+</div>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo"><a href="index.html" style="display:flex;align-items:center;gap:8px;"><span class="spark">✨</span> Plüsch Studios© <span class="spark" style="animation-delay:1.2s;">✨</span></a></div>
+    <div class="nav-mid">
+      <div>
+        <div class="nav-drop-btn">Projekte <span class="chev">▾</span></div>
+        <div class="dropdown">
+          <a href="downloader.html">🦊 Plüsch Downloader</a>
+          <a href="shop.html">🛒 Plüsch Shop</a>
+          <a href="index.html#explore">🧪 In Entwicklung</a>
+        </div>
+      </div>
+      <a href="downloader.html">Downloader</a>
+      <a href="pricing.html">Abonnement</a>
+      <a href="support.html">Support</a>
+      <a href="impressum.html">Impressum</a>
+    </div>
+    <div class="nav-icons">
+      <a class="icon-btn" href="support.html" title="Support">🔍</a>
+      <a class="icon-btn" href="account.html" title="Mein Konto">👤</a>
+      <a class="icon-btn" href="shop.html" title="Shop (bald)">🛒<span class="cart-badge">0</span></a>
+    </div>
+  </div>
+</nav>
+
+<header class="page-hero">
+  <div class="container">
+    <p class="eyebrow fade-in">Kompatibilität</p>
+    <h1 class="page-title fade-in" style="animation-delay:.05s;">🌐 Unterstützte Seiten</h1>
+    <p class="page-sub fade-in" style="animation-delay:.1s;">1.800+ SEITEN VIA YT-DLP</p>
+
+    <div class="category fade-in" style="animation-delay:.15s;">
+      <div class="category-title">▶️ Video-Plattformen</div>
+      <div class="tag-row">
+        <a href="https://youtube.com" target="_blank" class="site-tag">YouTube</a><a href="https://music.youtube.com" target="_blank" class="site-tag">YouTube Music</a><a href="https://vimeo.com" target="_blank" class="site-tag">Vimeo</a><a href="https://dailymotion.com" target="_blank" class="site-tag">Dailymotion</a><a href="https://twitch.tv" target="_blank" class="site-tag">Twitch</a><a href="https://twitch.tv" target="_blank" class="site-tag">Twitch Clips</a><a href="https://rumble.com" target="_blank" class="site-tag">Rumble</a><a href="https://odysee.com" target="_blank" class="site-tag">Odysee / LBRY</a><a href="https://bitchute.com" target="_blank" class="site-tag">Bitchute</a><a href="https://joinpeertube.org" target="_blank" class="site-tag">Peertube</a><a href="https://veoh.com" target="_blank" class="site-tag">Veoh</a><a href="https://nicovideo.jp" target="_blank" class="site-tag">Niconico</a><a href="https://bilibili.com" target="_blank" class="site-tag">Bilibili</a><a href="https://youku.com" target="_blank" class="site-tag">Youku</a><a href="https://iqiyi.com" target="_blank" class="site-tag">iQIYI</a>
+      </div>
+    </div>
+
+    <div class="category fade-in" style="animation-delay:.2s;">
+      <div class="category-title">📱 Social Media</div>
+      <div class="tag-row">
+        <a href="https://tiktok.com" target="_blank" class="site-tag">TikTok</a><a href="https://instagram.com" target="_blank" class="site-tag">Instagram</a><a href="https://twitter.com" target="_blank" class="site-tag">Twitter / X</a><a href="https://facebook.com" target="_blank" class="site-tag">Facebook</a><a href="https://snapchat.com" target="_blank" class="site-tag">Snapchat</a><a href="https://reddit.com" target="_blank" class="site-tag">Reddit</a><a href="https://pinterest.com" target="_blank" class="site-tag">Pinterest</a><a href="https://tumblr.com" target="_blank" class="site-tag">Tumblr</a><a href="https://linkedin.com" target="_blank" class="site-tag">LinkedIn</a><a href="https://vk.com" target="_blank" class="site-tag">VK</a><a href="https://likee.video" target="_blank" class="site-tag">Likee</a><a href="https://coub.com" target="_blank" class="site-tag">Coub</a><a href="https://9gag.com" target="_blank" class="site-tag">9GAG</a><a href="https://imgur.com" target="_blank" class="site-tag">Imgur</a><a href="https://streamable.com" target="_blank" class="site-tag">Streamable</a>
+      </div>
+    </div>
+
+    <div class="category fade-in" style="animation-delay:.25s;">
+      <div class="category-title">🎵 Musik & Audio</div>
+      <div class="tag-row">
+        <a href="https://soundcloud.com" target="_blank" class="site-tag">SoundCloud</a><a href="https://bandcamp.com" target="_blank" class="site-tag">Bandcamp</a><a href="https://audiomack.com" target="_blank" class="site-tag">Audiomack</a><a href="https://audius.co" target="_blank" class="site-tag">Audius</a><a href="https://mixcloud.com" target="_blank" class="site-tag">Mixcloud</a><a href="https://jamendo.com" target="_blank" class="site-tag">Jamendo</a><a href="https://music.yandex.ru" target="_blank" class="site-tag">Yandex Music</a><a href="https://monstercat.com" target="_blank" class="site-tag">Monstercat</a>
+      </div>
+    </div>
+
+    <div class="category fade-in" style="animation-delay:.3s;">
+      <div class="category-title">📺 TV & Mediatheken</div>
+      <div class="tag-row">
+        <a href="https://ardmediathek.de" target="_blank" class="site-tag">ARD Mediathek</a><a href="https://zdf.de" target="_blank" class="site-tag">ZDF Mediathek</a><a href="https://3sat.de" target="_blank" class="site-tag">3sat</a><a href="https://arte.tv" target="_blank" class="site-tag">Arte</a><a href="https://tvthek.orf.at" target="_blank" class="site-tag">ORF TVthek</a><a href="https://srf.ch/play" target="_blank" class="site-tag">SRF Play</a><a href="https://france.tv" target="_blank" class="site-tag">France TV</a><a href="https://bbc.co.uk/iplayer" target="_blank" class="site-tag">BBC iPlayer</a><a href="https://itv.com" target="_blank" class="site-tag">ITV</a><a href="https://npo.nl" target="_blank" class="site-tag">NPO</a><a href="https://svtplay.se" target="_blank" class="site-tag">SVT Play</a><a href="https://nrk.no" target="_blank" class="site-tag">NRK</a><a href="https://raiplay.it" target="_blank" class="site-tag">RAI Play</a><a href="https://rtve.es" target="_blank" class="site-tag">RTVE</a>
+      </div>
+    </div>
+
+    <div class="category fade-in" style="animation-delay:.35s;">
+      <div class="category-title">📰 News & Magazine</div>
+      <div class="tag-row">
+        <a href="https://cnn.com" target="_blank" class="site-tag">CNN</a><a href="https://bbc.com/news" target="_blank" class="site-tag">BBC News</a><a href="https://bloomberg.com" target="_blank" class="site-tag">Bloomberg</a><a href="https://aljazeera.com" target="_blank" class="site-tag">Al Jazeera</a><a href="https://vice.com" target="_blank" class="site-tag">Vice</a><a href="https://tagesschau.de" target="_blank" class="site-tag">Tagesschau</a><a href="https://spiegel.de" target="_blank" class="site-tag">Spiegel Online</a>
+      </div>
+    </div>
+
+    <div class="category fade-in" style="animation-delay:.4s;">
+      <div class="category-title">🎮 Gaming & Esports</div>
+      <div class="tag-row">
+        <a href="https://twitch.tv" target="_blank" class="site-tag">Twitch</a><a href="https://youtube.com/gaming" target="_blank" class="site-tag">YouTube Gaming</a><a href="https://medal.tv" target="_blank" class="site-tag">Medal.tv</a><a href="https://roosterteeth.com" target="_blank" class="site-tag">Roosterteeth</a><a href="https://gamespot.com" target="_blank" class="site-tag">Gamespot</a><a href="https://ign.com" target="_blank" class="site-tag">IGN</a>
+      </div>
+    </div>
+
+    <div class="category fade-in" style="animation-delay:.45s;">
+      <div class="category-title">🎓 Bildung & E-Learning</div>
+      <div class="tag-row">
+        <a href="https://khanacademy.org" target="_blank" class="site-tag">Khan Academy</a><a href="https://ted.com" target="_blank" class="site-tag">TED</a><a href="https://ocw.mit.edu" target="_blank" class="site-tag">MIT OpenCourseWare</a><a href="https://lecturio.de" target="_blank" class="site-tag">Lecturio</a><a href="https://pluralsight.com" target="_blank" class="site-tag">Pluralsight</a><a href="https://egghead.io" target="_blank" class="site-tag">Egghead.io</a>
+      </div>
+    </div>
+
+    <div class="category fade-in" style="animation-delay:.5s;">
+      <div class="category-title">🎙️ Podcasts & Radio</div>
+      <div class="tag-row">
+        <a href="https://spreaker.com" target="_blank" class="site-tag">Spreaker</a><a href="https://podbean.com" target="_blank" class="site-tag">Podbean</a><a href="https://player.fm" target="_blank" class="site-tag">Player.fm</a><a href="https://simplecast.com" target="_blank" class="site-tag">Simplecast</a><a href="https://tunein.com" target="_blank" class="site-tag">TuneIn</a><a href="https://ardaudiothek.de" target="_blank" class="site-tag">ARD Audiothek</a><a href="https://deutschlandfunk.de" target="_blank" class="site-tag">Deutschlandfunk</a><a href="https://wdr.de" target="_blank" class="site-tag">WDR</a>
+      </div>
+    </div>
+
+    <div class="category fade-in" style="animation-delay:.55s;">
+      <div class="category-title">🌍 International</div>
+      <div class="tag-row">
+        <a href="https://hotstar.com" target="_blank" class="site-tag">Hotstar</a><a href="https://mxplayer.in" target="_blank" class="site-tag">MX Player</a><a href="https://sonyliv.com" target="_blank" class="site-tag">SonyLIV</a><a href="https://zee5.com" target="_blank" class="site-tag">Zee5</a><a href="https://abema.tv" target="_blank" class="site-tag">Abema TV</a><a href="https://nhk.or.jp" target="_blank" class="site-tag">NHK</a><a href="https://tver.jp" target="_blank" class="site-tag">TVer</a>
+      </div>
+    </div>
+
+    <p class="more-note fade-in" style="animation-delay:.6s;">+ über 1.700 weitere Seiten werden ebenfalls unterstützt (via yt-dlp) — einfach Link in Plüsch Downloader einfügen und schauen, ob's klappt.</p>
+  </div>
+</header>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="nav-logo"><span class="spark">✨</span> Plüsch Studios© <span class="spark" style="animation-delay:1.2s;">✨</span></div>
+      <div class="footer-links">
+        <a href="downloader.html">Plüsch Downloader</a>
+        <a href="pricing.html">Abonnement</a>
+        <a href="support.html">Support</a>
+        <a href="impressum.html">Impressum</a>
+        <a href="sites.html">Unterstützte Seiten</a>
+        <a href="whatsnew.html">Changelog</a>
+        <a href="https://github.com/TheStupidPlueschGuy">GitHub</a>
+      </div>
+    </div>
+    <div class="footer-divider"></div>
+    <div class="footer-copy">© 2026 TheStupidPlueschGuy · Plüsch Studios ist eine Eigenmarke, kein eingetragenes Unternehmen (sofern nicht anders im Impressum angegeben).</div>
+  </div>
+</footer>
+
+<script>
+if (window.matchMedia('(hover: hover)').matches) {
+  const ring = document.getElementById('cursorRing'), dot = document.getElementById('cursorDot');
+  let rx=0, ry=0, mx=0, my=0;
+  window.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; dot.style.left=mx+'px'; dot.style.top=my+'px'; });
+  (function loop(){ rx+=(mx-rx)*0.18; ry+=(my-ry)*0.18; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(loop); })();
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => ring.classList.add('active'));
+    el.addEventListener('mouseleave', () => ring.classList.remove('active'));
+  });
+}
+</script>
+
+</body>
+</html>
