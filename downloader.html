@@ -258,7 +258,7 @@ if (window.matchMedia('(hover: hover)').matches) {
     const c = data.content;
 
     document.getElementById('cEyebrow').textContent = c.eyebrow;
-    document.getElementById('cTitle').innerHTML = `${c.title_line1}<br>Dein <span class="gradient-text">${c.title_word}</span>${c.title_line2_suffix}`;
+    document.getElementById('cTitle').innerHTML = `${c.title_line1}<br>Dein <span class="gradient-text">${c.title_word}</span> ${c.title_line2_suffix}`;
     document.getElementById('cLede').textContent = c.lede;
     document.getElementById('cHeroNote').textContent = c.hero_note;
     document.getElementById('cCtaTitle').textContent = c.cta_title;
