@@ -95,7 +95,9 @@ tr:last-child td{border-bottom:none;}
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('overview')">📊 Übersicht</button>
     <button class="tab-btn" onclick="switchTab('shop')">🛍️ Shop</button>
+    <button class="tab-btn" onclick="switchTab('projects')">🧪 Projekte</button>
     <button class="tab-btn" onclick="switchTab('pricing')">💰 Preise</button>
+    <button class="tab-btn" onclick="switchTab('content')">🖊️ Downloader-Seite</button>
     <button class="tab-btn" onclick="switchTab('tickets')">🎫 Tickets</button>
     <button class="tab-btn" onclick="switchTab('users')">👥 Nutzer</button>
   </div>
@@ -138,6 +140,27 @@ tr:last-child td{border-bottom:none;}
     </div>
   </div>
 
+  <div class="panel" id="panel-projects">
+    <div class="card">
+      <h2>➕ Neues Projekt (Kreis-Kachel auf der Startseite)</h2>
+      <label>Name</label>
+      <input class="input" type="text" id="prName" placeholder="z.B. Plüschi Notes" />
+      <div class="row2">
+        <div><label>Icon</label><input class="input" type="text" id="prIcon" placeholder="🧪" /></div>
+        <div><label>Status-Text</label><input class="input" type="text" id="prStatus" placeholder="In Arbeit" /></div>
+      </div>
+      <label>Link (optional - leer lassen wenn noch keine Seite existiert)</label>
+      <input class="input" type="text" id="prUrl" placeholder="https://... oder leer" />
+      <button class="btn" id="projectPublishBtn" onclick="publishProject()" style="width:auto;">🚀 Hinzufügen</button>
+      <div class="err" id="projectErr"></div>
+      <div class="ok" id="projectOk"></div>
+    </div>
+    <div class="card">
+      <h2>🧪 Aktuelle Projekt-Kacheln</h2>
+      <div id="projectList"><div class="empty">Lädt...</div></div>
+    </div>
+  </div>
+
   <div class="panel" id="panel-tickets">
     <div class="card">
       <h2>🎫 Support-Tickets</h2>
@@ -155,6 +178,44 @@ tr:last-child td{border-bottom:none;}
       <button class="btn" id="pricingSaveBtn" onclick="savePricing()" style="width:auto;margin-top:6px;">💾 Alle Tarife speichern</button>
       <div class="err" id="pricingErr"></div>
       <div class="ok" id="pricingOk"></div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-content">
+    <div class="card">
+      <h2>🖊️ Downloader-Seite (downloader.html)</h2>
+      <p style="font-size:11.5px;color:var(--text-faint);margin:-10px 0 16px;">
+        Änderungen erscheinen live auf der Website - kein erneutes Hochladen von Dateien nötig.
+      </p>
+
+      <label>Badge über der Überschrift</label>
+      <input class="input" type="text" id="ctEyebrow" />
+
+      <div class="row3" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:14px 0;">
+        <div><label>Überschrift Zeile 1</label><input class="input" type="text" id="ctTitleLine1" /></div>
+        <div><label>Hervorgehobenes Wort</label><input class="input" type="text" id="ctTitleWord" /></div>
+        <div><label>Rest nach dem Wort</label><input class="input" type="text" id="ctTitleSuffix" /></div>
+      </div>
+
+      <label>Untertitel</label>
+      <textarea class="input" id="ctLede" style="min-height:70px;"></textarea>
+
+      <label>Kleiner Hinweis unter dem Button</label>
+      <input class="input" type="text" id="ctHeroNote" style="margin-bottom:14px;" />
+
+      <div class="tier-edit" style="margin-top:6px;">
+        <div style="font-size:12.5px;font-weight:700;margin-bottom:10px;">Feature-Kacheln (6 Stück)</div>
+        <div id="ctFeaturesForm"></div>
+      </div>
+
+      <label style="margin-top:16px;">Abschluss-Bereich Überschrift</label>
+      <input class="input" type="text" id="ctCtaTitle" />
+      <label>Abschluss-Bereich Untertext</label>
+      <input class="input" type="text" id="ctCtaSub" style="margin-bottom:16px;" />
+
+      <button class="btn" id="contentSaveBtn" onclick="saveContent()" style="width:auto;">💾 Downloader-Seite speichern</button>
+      <div class="err" id="contentErr"></div>
+      <div class="ok" id="contentOk"></div>
     </div>
   </div>
 
@@ -206,7 +267,9 @@ async function login() {
   document.getElementById('dash').style.display = 'block';
   renderStats(res.stats);
   loadShop();
+  loadProjects();
   loadPricing();
+  loadContent();
   loadTickets();
   loadUsers();
 }
@@ -297,6 +360,59 @@ async function deleteProduct(id) {
   if (!confirm('Produkt wirklich entfernen?')) return;
   const res = await api('/api/shop/admin/delete', { id });
   if (res.success) loadShop();
+}
+
+async function publishProject() {
+  const errBox = document.getElementById('projectErr'), okBox = document.getElementById('projectOk');
+  errBox.style.display = 'none'; okBox.style.display = 'none';
+
+  const payload = {
+    name: document.getElementById('prName').value.trim(),
+    icon: document.getElementById('prIcon').value.trim(),
+    status: document.getElementById('prStatus').value.trim(),
+    url: document.getElementById('prUrl').value.trim(),
+  };
+  if (!payload.name) {
+    errBox.textContent = '❌ Name ist Pflicht';
+    errBox.style.display = 'block';
+    return;
+  }
+
+  const btn = document.getElementById('projectPublishBtn');
+  btn.disabled = true; btn.textContent = 'Wird hinzugefügt...';
+  const res = await api('/api/admin/projects/publish', payload);
+  btn.disabled = false; btn.textContent = '🚀 Hinzufügen';
+
+  if (!res.success) { errBox.textContent = '❌ ' + res.error; errBox.style.display = 'block'; return; }
+
+  okBox.textContent = `✅ "${payload.name}" wurde hinzugefügt`;
+  okBox.style.display = 'block';
+  ['prName','prIcon','prStatus','prUrl'].forEach(id => document.getElementById(id).value = '');
+  loadProjects();
+}
+
+async function loadProjects() {
+  const res = await fetch(MAILBOT_URL + '/api/projects').then(r => r.json()).catch(() => null);
+  const container = document.getElementById('projectList');
+  if (!res || !res.success || res.projects.length === 0) {
+    container.innerHTML = '<div class="empty">Noch keine zusätzlichen Projekte hinzugefügt</div>';
+    return;
+  }
+  container.innerHTML = `<table><tr><th>Projekt</th><th>Status</th><th>Link</th><th></th></tr>` +
+    res.projects.map(p => `
+      <tr>
+        <td>${p.icon || ''} ${p.name}</td>
+        <td>${p.status || '—'}</td>
+        <td>${p.url ? `<a href="${p.url}" target="_blank" style="color:var(--c3);">Link</a>` : '—'}</td>
+        <td><button class="btn btn-danger btn-sm" onclick="deleteProject('${p.id}')">Entfernen</button></td>
+      </tr>
+    `).join('') + `</table>`;
+}
+
+async function deleteProject(id) {
+  if (!confirm('Projekt wirklich entfernen?')) return;
+  const res = await api('/api/admin/projects/delete', { id });
+  if (res.success) loadProjects();
 }
 
 async function loadTickets() {
@@ -392,6 +508,73 @@ async function savePricing() {
 
   if (!res.success) { errBox.textContent = '❌ ' + res.error; errBox.style.display = 'block'; return; }
   currentTiers = updated;
+  okBox.textContent = '✅ Gespeichert — live auf der Website sichtbar';
+  okBox.style.display = 'block';
+}
+
+let currentDownloaderContent = null;
+
+function renderFeaturesForm(features) {
+  const container = document.getElementById('ctFeaturesForm');
+  container.innerHTML = features.map((f, i) => `
+    <div class="tier-row3" style="margin-bottom:10px;">
+      <input class="input icon-input" type="text" id="ctFeat${i}_icon" value="${f.icon}" style="width:50px;text-align:center;" />
+      <input class="input" type="text" id="ctFeat${i}_title" value="${f.title}" placeholder="Titel" />
+      <input class="input" type="text" id="ctFeat${i}_desc" value="${f.desc}" placeholder="Beschreibung" />
+    </div>
+  `).join('');
+}
+
+async function loadContent() {
+  try {
+    const res = await fetch(MAILBOT_URL + '/api/content/downloader').then(r => r.json());
+    if (!res.success) return;
+    currentDownloaderContent = res.content;
+    const c = res.content;
+
+    document.getElementById('ctEyebrow').value = c.eyebrow;
+    document.getElementById('ctTitleLine1').value = c.title_line1;
+    document.getElementById('ctTitleWord').value = c.title_word;
+    document.getElementById('ctTitleSuffix').value = c.title_line2_suffix;
+    document.getElementById('ctLede').value = c.lede;
+    document.getElementById('ctHeroNote').value = c.hero_note;
+    document.getElementById('ctCtaTitle').value = c.cta_title;
+    document.getElementById('ctCtaSub').value = c.cta_sub;
+    renderFeaturesForm(c.features);
+  } catch (e) {
+    document.getElementById('ctFeaturesForm').innerHTML = '<div class="empty">Konnte Inhalte nicht laden</div>';
+  }
+}
+
+async function saveContent() {
+  const errBox = document.getElementById('contentErr'), okBox = document.getElementById('contentOk');
+  errBox.style.display = 'none'; okBox.style.display = 'none';
+
+  const features = (currentDownloaderContent.features || []).map((_, i) => ({
+    icon: document.getElementById(`ctFeat${i}_icon`).value.trim(),
+    title: document.getElementById(`ctFeat${i}_title`).value.trim(),
+    desc: document.getElementById(`ctFeat${i}_desc`).value.trim(),
+  }));
+
+  const content = {
+    eyebrow: document.getElementById('ctEyebrow').value.trim(),
+    title_line1: document.getElementById('ctTitleLine1').value.trim(),
+    title_word: document.getElementById('ctTitleWord').value.trim(),
+    title_line2_suffix: document.getElementById('ctTitleSuffix').value.trim(),
+    lede: document.getElementById('ctLede').value.trim(),
+    hero_note: document.getElementById('ctHeroNote').value.trim(),
+    cta_title: document.getElementById('ctCtaTitle').value.trim(),
+    cta_sub: document.getElementById('ctCtaSub').value.trim(),
+    features: features,
+  };
+
+  const btn = document.getElementById('contentSaveBtn');
+  btn.disabled = true; btn.textContent = 'Speichert...';
+  const res = await api('/api/admin/content/downloader/update', { content });
+  btn.disabled = false; btn.textContent = '💾 Downloader-Seite speichern';
+
+  if (!res.success) { errBox.textContent = '❌ ' + res.error; errBox.style.display = 'block'; return; }
+  currentDownloaderContent = content;
   okBox.textContent = '✅ Gespeichert — live auf der Website sichtbar';
   okBox.style.display = 'block';
 }

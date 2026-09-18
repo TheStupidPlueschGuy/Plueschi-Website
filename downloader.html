@@ -163,14 +163,14 @@ html{scrollbar-color:var(--c1) var(--bg);}
 <header class="hero">
   <div class="hero-grid">
     <div class="fade-in">
-      <p class="eyebrow">🦊 Kostenlos · Windows · Kein Konto nötig zum Downloaden</p>
-      <h1 class="display">Ein Link rein.<br>Dein <span class="gradient-text">Video</span> raus.</h1>
-      <p class="lede">Plüsch Downloader lädt Videos und Musik von YouTube, TikTok, Twitch und über 1.800 weiteren Seiten — als MP4 oder MP3, in Originalqualität, ohne Wasserzeichen.</p>
+      <p class="eyebrow" id="cEyebrow">🦊 Kostenlos · Windows · Kein Konto nötig zum Downloaden</p>
+      <h1 class="display" id="cTitle">Ein Link rein.<br>Dein <span class="gradient-text">Video</span> raus.</h1>
+      <p class="lede" id="cLede">Plüsch Downloader lädt Videos und Musik von YouTube, TikTok, Twitch und über 1.800 weiteren Seiten — als MP4 oder MP3, in Originalqualität, ohne Wasserzeichen.</p>
       <div class="hero-cta">
         <a class="btn btn-solid" href="https://github.com/TheStupidPlueschGuy/plueschi-releases/releases/latest">⬇️ Kostenlos herunterladen</a>
         <a class="btn btn-ghost" href="https://github.com/TheStupidPlueschGuy/plueschi-releases">Auf GitHub ansehen</a>
       </div>
-      <p class="hero-note">WINDOWS 10/11 · AKTUELLE VERSION WIRD AUTOMATISCH GELADEN</p>
+      <p class="hero-note" id="cHeroNote">WINDOWS 10/11 · AKTUELLE VERSION WIRD AUTOMATISCH GELADEN</p>
     </div>
 
     <div class="showcase fade-in" style="animation-delay:.15s;">
@@ -197,7 +197,7 @@ html{scrollbar-color:var(--c1) var(--bg);}
 
 <section class="features container">
   <h2>Alles, was du zum Herunterladen brauchst — nichts, was du nicht brauchst.</h2>
-  <div class="feat-grid">
+  <div class="feat-grid" id="cFeatGrid">
     <div class="feat-card"><div class="feat-icon">🎬</div><h3>MP4 & MP3</h3><p>Qualität wählbar von 480p bis zur besten verfügbaren Auflösung. Für Musik: sauberes MP3 ohne Videoballast.</p></div>
     <div class="feat-card"><div class="feat-icon">📋</div><h3>Warteschlange</h3><p>Mehrere URLs auf einmal? Alle zur Warteschlange hinzufügen und nacheinander abarbeiten lassen.</p></div>
     <div class="feat-card"><div class="feat-icon">🍪</div><h3>Private Videos</h3><p>Cookie-Import für altersbeschränkte oder private Inhalte, direkt aus deinem Browser.</p></div>
@@ -209,8 +209,8 @@ html{scrollbar-color:var(--c1) var(--bg);}
 
 <section class="cta-band container">
   <div class="cta-card">
-    <h2>Bereit zum ersten Download?</h2>
-    <p>Kostenlos, keine Registrierung nötig zum Loslegen.</p>
+    <h2 id="cCtaTitle">Bereit zum ersten Download?</h2>
+    <p id="cCtaSub">Kostenlos, keine Registrierung nötig zum Loslegen.</p>
     <a class="btn btn-solid" href="https://github.com/TheStupidPlueschGuy/plueschi-releases/releases/latest">⬇️ Jetzt herunterladen</a>
   </div>
 </section>
@@ -224,6 +224,8 @@ html{scrollbar-color:var(--c1) var(--bg);}
         <a href="pricing.html">Abonnement</a>
         <a href="support.html">Support</a>
         <a href="impressum.html">Impressum</a>
+        <a href="sites.html">Unterstützte Seiten</a>
+        <a href="whatsnew.html">Changelog</a>
         <a href="https://github.com/TheStupidPlueschGuy">GitHub</a>
       </div>
     </div>
@@ -243,6 +245,34 @@ if (window.matchMedia('(hover: hover)').matches) {
     el.addEventListener('mouseleave', () => ring.classList.remove('active'));
   });
 }
+
+// Lädt die Texte dieser Seite dynamisch vom Mailbot (vom Admin-Dashboard
+// bearbeitbar). Die statischen Texte oben im HTML bleiben als Fallback
+// stehen, falls der Mailbot mal nicht erreichbar ist - kein leerer Bereich.
+(async function loadContent(){
+  const MAILBOT_URL = "https://thestupidplueschguy.pythonanywhere.com";
+  try {
+    const res = await fetch(MAILBOT_URL + '/api/content/downloader', { cache: "no-store" });
+    const data = await res.json();
+    if (!data.success) return;
+    const c = data.content;
+
+    document.getElementById('cEyebrow').textContent = c.eyebrow;
+    document.getElementById('cTitle').innerHTML = `${c.title_line1}<br>Dein <span class="gradient-text">${c.title_word}</span>${c.title_line2_suffix}`;
+    document.getElementById('cLede').textContent = c.lede;
+    document.getElementById('cHeroNote').textContent = c.hero_note;
+    document.getElementById('cCtaTitle').textContent = c.cta_title;
+    document.getElementById('cCtaSub').textContent = c.cta_sub;
+
+    if (c.features && c.features.length > 0) {
+      document.getElementById('cFeatGrid').innerHTML = c.features.map(f => `
+        <div class="feat-card"><div class="feat-icon">${f.icon}</div><h3>${f.title}</h3><p>${f.desc}</p></div>
+      `).join('');
+    }
+  } catch (e) {
+    // Mailbot nicht erreichbar - Fallback-Texte aus dem HTML bleiben stehen
+  }
+})();
 </script>
 
 </body>

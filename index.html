@@ -242,11 +242,12 @@ html{scrollbar-color:var(--c1) var(--bg);}
         <div class="circle-name">Downloader</div>
         <div class="circle-sub">Live</div>
       </a>
-      <a href="shop.html" class="circle-item placeholder">
-        <div class="circle-ring">🛒</div>
+      <a href="shop.html" class="circle-item placeholder" id="shopCircleItem">
+        <div class="circle-ring" id="shopCircleRing">🛒</div>
         <div class="circle-name">Shop</div>
-        <div class="circle-sub">Bald</div>
+        <div class="circle-sub" id="shopCircleStatus">Bald</div>
       </a>
+      <div id="extraProjectsContainer" style="display:contents;">
       <div class="circle-item placeholder">
         <div class="circle-ring">🧪</div>
         <div class="circle-name">Projekt</div>
@@ -261,6 +262,7 @@ html{scrollbar-color:var(--c1) var(--bg);}
         <div class="circle-ring">✨</div>
         <div class="circle-name">Mehr bald</div>
         <div class="circle-sub">—</div>
+      </div>
       </div>
     </div>
     <button class="explore-arrow" onclick="document.getElementById('circleScroll').scrollBy({left:200,behavior:'smooth'})">›</button>
@@ -299,6 +301,53 @@ if (window.matchMedia('(hover: hover)').matches) {
     el.addEventListener('mouseleave', () => ring.classList.remove('active'));
   });
 }
+
+// Lädt manuell hinzugefügte Projekte und ersetzt die statischen "In Arbeit"-
+// Platzhalter NUR, wenn wirklich welche existieren - sonst bleiben die
+// Platzhalter einfach stehen, kein leerer Bereich.
+(async function loadExtraProjects(){
+  const MAILBOT_URL = "https://thestupidplueschguy.pythonanywhere.com";
+  try {
+    const res = await fetch(MAILBOT_URL + '/api/projects', { cache: "no-store" });
+    const data = await res.json();
+    if (!data.success || !data.projects || data.projects.length === 0) return;
+
+    const container = document.getElementById('extraProjectsContainer');
+    container.innerHTML = data.projects.map(p => {
+      const tag = p.url ? 'a' : 'div';
+      const href = p.url ? `href="${p.url}"` : '';
+      return `
+        <${tag} ${href} class="circle-item placeholder">
+          <div class="circle-ring">${p.icon || '🧪'}</div>
+          <div class="circle-name">${p.name}</div>
+          <div class="circle-sub">${p.status || 'In Arbeit'}</div>
+        </${tag}>
+      `;
+    }).join('');
+  } catch (e) {
+    // Mailbot nicht erreichbar - Platzhalter bleiben einfach stehen
+  }
+})();
+
+// Prüft, ob echte Shop-Produkte existieren, und aktualisiert die "Shop"-Kachel
+// von "Bald" auf "Live" - sonst bliebe sie für immer statisch auf "Bald" stehen,
+// auch nachdem im Admin-Dashboard längst Produkte veröffentlicht wurden.
+(async function checkShopStatus(){
+  const MAILBOT_URL = "https://thestupidplueschguy.pythonanywhere.com";
+  try {
+    const res = await fetch(MAILBOT_URL + '/api/shop/products', { cache: "no-store" });
+    const data = await res.json();
+    if (data.success && data.products && data.products.length > 0) {
+      document.getElementById('shopCircleItem').classList.remove('placeholder');
+      document.getElementById('shopCircleStatus').textContent = 'Live';
+      const ring = document.getElementById('shopCircleRing');
+      ring.classList.add('live');
+      ring.insertAdjacentHTML('beforeend', '<span class="dot-live"></span>');
+    }
+  } catch (e) {
+    // Mailbot nicht erreichbar - Kachel bleibt einfach auf "Bald" stehen, kein Absturz
+  }
+})();
 
 (function loopDemo(){
   const typedEl=document.getElementById('demoTyped'), pillMp4=document.getElementById('pillMp4'), pillMp3=document.getElementById('pillMp3');
