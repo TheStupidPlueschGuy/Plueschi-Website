@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Abmelden — Plüsch Studios©</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+:root{--bg:#050508;--surface:#15152a;--border-soft:rgba(255,255,255,0.08);--text:#eeeeff;--text-dim:rgba(255,255,255,0.56);--text-faint:rgba(255,255,255,0.30);--c1:#7c3aed;--c2:#db2777;--c3:#22d3ee;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;line-height:1.6;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+.card{width:100%;max-width:420px;background:rgba(21,21,42,.85);border:1px solid var(--border-soft);border-radius:20px;padding:36px;text-align:center;}
+.icn{font-size:44px;margin-bottom:16px;}
+h1{font-size:19px;margin:0 0 10px;}
+p{font-size:13.5px;color:var(--text-dim);margin:0;}
+a{color:var(--c3);text-decoration:none;}
+.btn{display:inline-block;margin-top:20px;padding:12px 24px;border-radius:10px;font-weight:800;font-size:12.5px;letter-spacing:.03em;text-transform:uppercase;background:linear-gradient(135deg,var(--c1),var(--c2));color:#fff;}
+</style>
+</head>
+<body>
+
+<div class="card" id="card">
+  <div class="icn">🦊</div>
+  <h1>Einen Moment...</h1>
+  <p>Wir bearbeiten deine Abmeldung.</p>
+</div>
+
+<script>
+const MAILBOT_URL = "https://thestupidplueschguy.pythonanywhere.com";
+
+async function unsubscribe() {
+  const params = new URLSearchParams(window.location.search);
+  const email = params.get('email');
+  const token = params.get('token');
+  const card = document.getElementById('card');
+
+  if (!email || !token) {
+    card.innerHTML = `<div class="icn">❌</div><h1>Ungültiger Link</h1><p>Dieser Abmelde-Link ist unvollständig. <a href="index.html">Zur Startseite</a></p>`;
+    return;
+  }
+
+  try {
+    const res = await fetch(MAILBOT_URL + '/api/shop/unsubscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, token }),
+    });
+    const data = await res.json();
+
+    if (!data.success) {
+      card.innerHTML = `<div class="icn">❌</div><h1>Konnte nicht abmelden</h1><p>${data.error || 'Unbekannter Fehler'}</p><a class="btn" href="index.html">Zur Startseite</a>`;
+      return;
+    }
+
+    card.innerHTML = `<div class="icn">✅</div><h1>Abgemeldet</h1><p>${email} wurde erfolgreich vom Shop-Newsletter abgemeldet. Du bekommst keine weiteren Benachrichtigungen mehr.</p><a class="btn" href="index.html">Zur Startseite</a>`;
+  } catch (e) {
+    card.innerHTML = `<div class="icn">❌</div><h1>Mailbot nicht erreichbar</h1><p>Bitte versuch es gleich nochmal.</p>`;
+  }
+}
+unsubscribe();
+</script>
+
+</body>
+</html>
