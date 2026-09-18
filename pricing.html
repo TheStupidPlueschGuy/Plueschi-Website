@@ -233,7 +233,7 @@ function renderTiers(tiers) {
 
 async function loadTiers() {
   try {
-    const res = await fetch(MAILBOT_URL + '/api/pricing/tiers');
+    const res = await fetch(MAILBOT_URL + '/api/pricing/tiers', { cache: "no-store" });
     const data = await res.json();
     if (data.success) { renderTiers(data.tiers); return; }
     throw new Error('Keine Daten');

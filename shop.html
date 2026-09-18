@@ -79,6 +79,15 @@ html{scrollbar-color:var(--c1) var(--bg);}
 .preview-card .name{font-size:12.5px;font-weight:700;color:var(--text-dim);}
 .preview-card .price{font-size:11px;color:var(--text-faint);font-family:'JetBrains Mono',monospace;margin-top:4px;}
 
+.category-block{margin-bottom:36px;text-align:left;}
+.category-title{font-size:13px;font-weight:800;color:var(--text-dim);text-transform:uppercase;letter-spacing:.04em;margin:0 0 14px;}
+.product-card{background:rgba(21,21,42,.75);border:1px solid var(--border-soft);border-radius:16px;padding:22px 18px;transition:transform .2s,border-color .2s;display:block;}
+.product-card:hover{transform:translateY(-4px);border-color:var(--c3);}
+.product-card .icn{font-size:30px;margin-bottom:10px;}
+.product-card .name{font-size:13.5px;font-weight:800;color:var(--text);}
+.product-card .desc{font-size:11.5px;color:var(--text-faint);margin:6px 0 10px;line-height:1.5;}
+.product-card .price{font-size:12.5px;color:var(--c3);font-family:'JetBrains Mono',monospace;font-weight:700;}
+
 .notify-card{background:rgba(21,21,42,.75);backdrop-filter:blur(20px);border:1px solid var(--border-soft);border-radius:20px;padding:28px;position:relative;overflow:hidden;}
 .notify-card::before{content:'';position:absolute;inset:0;border-radius:20px;padding:1px;background:conic-gradient(from var(--ang,0deg),var(--c1),var(--c3),var(--c2),var(--c1));pointer-events:none;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:rotate-border 5s linear infinite;opacity:.6;}
 @property --ang{syntax:'<angle>';inherits:false;initial-value:0deg;}
@@ -146,7 +155,9 @@ html{scrollbar-color:var(--c1) var(--bg);}
     <h1 class="page-title fade-in" style="animation-delay:.1s;">Bald verfügbar <span class="gradient-text">✨</span></h1>
     <p class="page-sub fade-in" style="animation-delay:.15s;">Merch, Extras und mehr rund um Plüsch Studios — wir arbeiten dran. Trag dich ein und wir schreiben dir, sobald es losgeht.</p>
 
-    <div class="preview-grid fade-in" style="animation-delay:.2s;">
+    <div id="productSections"></div>
+
+    <div class="preview-grid fade-in" id="placeholderGrid" style="animation-delay:.2s;">
       <div class="preview-card"><div class="icn">👕</div><div class="name">T-Shirts</div><div class="price">Bald</div></div>
       <div class="preview-card"><div class="icn">🧢</div><div class="name">Caps</div><div class="price">Bald</div></div>
       <div class="preview-card"><div class="icn">🧸</div><div class="name">Plüschtiere</div><div class="price">Bald</div></div>
@@ -161,6 +172,7 @@ html{scrollbar-color:var(--c1) var(--bg);}
         <button class="btn" onclick="notifyMe()">Benachrichtigen</button>
       </div>
       <div class="ok-msg" id="notifyOk">✅ Gespeichert — wir melden uns!</div>
+      <div class="ok-msg" id="notifyErr" style="color:#f87171;"></div>
     </div>
   </div>
 </header>
@@ -174,6 +186,8 @@ html{scrollbar-color:var(--c1) var(--bg);}
         <a href="pricing.html">Abonnement</a>
         <a href="support.html">Support</a>
         <a href="impressum.html">Impressum</a>
+        <a href="sites.html">Unterstützte Seiten</a>
+        <a href="whatsnew.html">Changelog</a>
         <a href="https://github.com/TheStupidPlueschGuy">GitHub</a>
       </div>
     </div>
@@ -194,14 +208,104 @@ if (window.matchMedia('(hover: hover)').matches) {
   });
 }
 
-// HINWEIS: Speichert aktuell nur lokal im Browser (kein Backend-Endpunkt
-// dafür vorhanden). Sobald der Shop näher rückt, müsste das an einen echten
-// Mailbot-Endpunkt geschickt werden, der die Adressen sammelt.
-function notifyMe() {
-  const email = document.getElementById('notifyEmail').value.trim();
-  if (!email || !email.includes('@')) return;
-  document.getElementById('notifyOk').style.display = 'block';
-  document.getElementById('notifyEmail').value = '';
+const MAILBOT_URL = "https://thestupidplueschguy.pythonanywhere.com";
+
+async function mailbotPost(path, body) {
+  try {
+    const res = await fetch(MAILBOT_URL + path, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body || {}),
+    });
+    return await res.json();
+  } catch (e) {
+    return { success: false, error: "Mailbot nicht erreichbar. Kurz warten und nochmal versuchen." };
+  }
+}
+
+function renderProducts(products) {
+  const container = document.getElementById('productSections');
+  const placeholder = document.getElementById('placeholderGrid');
+
+  if (!products || products.length === 0) {
+    placeholder.style.display = 'grid';
+    return;
+  }
+  placeholder.style.display = 'none';
+
+  const byCategory = {};
+  products.forEach(p => {
+    const cat = p.category || 'Sonstiges';
+    if (!byCategory[cat]) byCategory[cat] = [];
+    byCategory[cat].push(p);
+  });
+
+  container.innerHTML = Object.entries(byCategory).map(([cat, items]) => `
+    <div class="category-block">
+      <div class="category-title">${cat}</div>
+      <div class="preview-grid">
+        ${items.map(p => `
+          <a class="product-card" href="${p.kofi_url}" target="_blank" rel="noopener">
+            <div class="icn">${p.icon || '🛍️'}</div>
+            <div class="name">${p.name}</div>
+            ${p.description ? `<div class="desc">${p.description}</div>` : ''}
+            ${p.price ? `<div class="price">${p.price}</div>` : ''}
+          </a>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+(async function loadProducts(){
+  const res = await mailbotPost_GET('/api/shop/products');
+  if (res && res.success) renderProducts(res.products);
+})();
+
+async function mailbotPost_GET(path) {
+  try {
+    const res = await fetch(MAILBOT_URL + path, { cache: "no-store" });
+    return await res.json();
+  } catch (e) {
+    return null;
+  }
+}
+
+async function notifyMe() {
+  const emailInput = document.getElementById('notifyEmail');
+  const email = emailInput.value.trim();
+  const errBox = document.getElementById('notifyErr');
+  const okBox = document.getElementById('notifyOk');
+  errBox.style.display = 'none';
+  okBox.style.display = 'none';
+
+  if (!email || !email.includes('@')) {
+    errBox.textContent = '❌ Bitte eine gültige E-Mail eingeben';
+    errBox.style.display = 'block';
+    return;
+  }
+
+  const btn = document.querySelector('.notify-row .btn');
+  btn.disabled = true;
+  const originalText = btn.textContent;
+  btn.textContent = 'Wird gespeichert...';
+
+  const res = await mailbotPost('/api/shop/notify', { email });
+
+  btn.disabled = false;
+  btn.textContent = originalText;
+
+  if (!res.success) {
+    errBox.textContent = '❌ ' + (res.error || 'Etwas ist schiefgelaufen');
+    errBox.style.display = 'block';
+    return;
+  }
+
+  okBox.textContent = res.already_subscribed
+    ? '✅ Du stehst schon auf der Liste!'
+    : '✅ Gespeichert — wir melden uns per Mail!';
+  okBox.style.display = 'block';
+  emailInput.value = '';
 }
 </script>
 
