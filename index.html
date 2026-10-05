@@ -316,9 +316,11 @@ if (window.matchMedia('(hover: hover)').matches) {
     container.innerHTML = data.projects.map(p => {
       const tag = p.url ? 'a' : 'div';
       const href = p.url ? `href="${p.url}"` : '';
+      // Mit Link = live (Farbring + grüner Punkt), ohne Link = grauer Platzhalter
+      const isLive = !!p.url;
       return `
-        <${tag} ${href} class="circle-item placeholder">
-          <div class="circle-ring">${p.icon || '🧪'}</div>
+        <${tag} ${href} class="circle-item${isLive ? '' : ' placeholder'}">
+          <div class="circle-ring${isLive ? ' live' : ''}">${p.icon || '🧪'}${isLive ? '<span class="dot-live"></span>' : ''}</div>
           <div class="circle-name">${p.name}</div>
           <div class="circle-sub">${p.status || 'In Arbeit'}</div>
         </${tag}>

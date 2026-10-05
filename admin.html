@@ -152,6 +152,7 @@ tr:last-child td{border-bottom:none;}
       <label>Link (optional - leer lassen wenn noch keine Seite existiert)</label>
       <input class="input" type="text" id="prUrl" placeholder="https://... oder leer" />
       <button class="btn" id="projectPublishBtn" onclick="publishProject()" style="width:auto;">🚀 Hinzufügen</button>
+      <button class="btn btn-ghost btn-sm" id="projectCancelBtn" onclick="cancelEditProject()" style="display:none;margin-top:10px;">Abbrechen</button>
       <div class="err" id="projectErr"></div>
       <div class="ok" id="projectOk"></div>
     </div>
@@ -362,6 +363,33 @@ async function deleteProduct(id) {
   if (res.success) loadShop();
 }
 
+let editingProjectId = null;
+let projectsCache = [];
+
+function setProjectFormMode(editing) {
+  document.getElementById('projectPublishBtn').textContent = editing ? '💾 Änderung speichern' : '🚀 Hinzufügen';
+  document.getElementById('projectCancelBtn').style.display = editing ? 'inline-block' : 'none';
+}
+
+function editProject(id) {
+  const p = projectsCache.find(x => x.id === id);
+  if (!p) return;
+  editingProjectId = id;
+  document.getElementById('prName').value = p.name || '';
+  document.getElementById('prIcon').value = p.icon || '';
+  document.getElementById('prStatus').value = p.status || '';
+  document.getElementById('prUrl').value = p.url || '';
+  setProjectFormMode(true);
+  document.getElementById('prName').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  document.getElementById('prName').focus();
+}
+
+function cancelEditProject() {
+  editingProjectId = null;
+  ['prName','prIcon','prStatus','prUrl'].forEach(id => document.getElementById(id).value = '');
+  setProjectFormMode(false);
+}
+
 async function publishProject() {
   const errBox = document.getElementById('projectErr'), okBox = document.getElementById('projectOk');
   errBox.style.display = 'none'; okBox.style.display = 'none';
@@ -379,15 +407,24 @@ async function publishProject() {
   }
 
   const btn = document.getElementById('projectPublishBtn');
-  btn.disabled = true; btn.textContent = 'Wird hinzugefügt...';
+  const wasEditing = editingProjectId;
+  btn.disabled = true; btn.textContent = wasEditing ? 'Wird gespeichert...' : 'Wird hinzugefügt...';
   const res = await api('/api/admin/projects/publish', payload);
-  btn.disabled = false; btn.textContent = '🚀 Hinzufügen';
+  btn.disabled = false; setProjectFormMode(!!wasEditing);
 
   if (!res.success) { errBox.textContent = '❌ ' + res.error; errBox.style.display = 'block'; return; }
 
-  okBox.textContent = `✅ "${payload.name}" wurde hinzugefügt`;
+  // Bearbeiten = neue Fassung veröffentlichen, danach die alte entfernen
+  if (wasEditing) {
+    const del = await api('/api/admin/projects/delete', { id: wasEditing });
+    if (!del.success) {
+      errBox.textContent = '⚠️ Neue Fassung ist angelegt, die alte konnte nicht entfernt werden – bitte manuell entfernen.';
+      errBox.style.display = 'block';
+    }
+  }
+  okBox.textContent = wasEditing ? `✅ "${payload.name}" wurde geändert` : `✅ "${payload.name}" wurde hinzugefügt`;
   okBox.style.display = 'block';
-  ['prName','prIcon','prStatus','prUrl'].forEach(id => document.getElementById(id).value = '');
+  cancelEditProject();
   loadProjects();
 }
 
@@ -398,13 +435,14 @@ async function loadProjects() {
     container.innerHTML = '<div class="empty">Noch keine zusätzlichen Projekte hinzugefügt</div>';
     return;
   }
+  projectsCache = res.projects;
   container.innerHTML = `<table><tr><th>Projekt</th><th>Status</th><th>Link</th><th></th></tr>` +
     res.projects.map(p => `
       <tr>
         <td>${p.icon || ''} ${p.name}</td>
         <td>${p.status || '—'}</td>
         <td>${p.url ? `<a href="${p.url}" target="_blank" style="color:var(--c3);">Link</a>` : '—'}</td>
-        <td><button class="btn btn-danger btn-sm" onclick="deleteProject('${p.id}')">Entfernen</button></td>
+        <td style="white-space:nowrap;"><button class="btn btn-ghost btn-sm" onclick="editProject('${p.id}')">✏️ Bearbeiten</button> <button class="btn btn-danger btn-sm" onclick="deleteProject('${p.id}')">Entfernen</button></td>
       </tr>
     `).join('') + `</table>`;
 }
